@@ -25,77 +25,61 @@
 </head>
 <body>
     <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <div id="app">
-        <div class="p-0 container-fluid">
-            <div class="row mt-5">
-                <div class="col-sm-12 col-md-10 offset-md-1">
-                    <div class="card">
-                        <div class="card-body" v-show="showStep1">
-                            <div class="row mb-3">
-                                <div class="col-sm-12">
-                                    <div class="custom-file b-form-file is-invalid" v-bind:class="ipaCss">
-                                        <input type="file" @change="getFile($event)" ref="ipa" required="required" accept=".ipa" aria-required="true" class="custom-file-input" v-bind:class="ipaCss" id="ipa" style="z-index: -5;">
-                                        <label data-browse="Browse" class="custom-file-label" for="ipa">
-                                            <span class="d-block form-file-text" style="pointer-events: none;">{{ ipaText }}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-6">
-                                    <div class="custom-file b-form-file is-invalid" v-bind:class="p12Css">
-                                        <input type="file" @change="getFile($event)" ref="p12" required="required" accept=".p12" aria-required="true" class="custom-file-input" v-bind:class="p12Css" id="p12" style="z-index: -5;">
-                                        <label data-browse="Browse" class="custom-file-label" for="p12">
-                                            <span class="d-block form-file-text" style="pointer-events: none;">{{ p12Text }}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" v-model="password" ref="pwd" placeholder="Enter .p12 password" required="required" aria-required="true" aria-invalid="true" class="form-control" v-bind:class="pwdCss" id="password">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-12">
-                                    <div class="custom-file b-form-file" v-bind:class="mobCss">
-                                        <input type="file" ref="mob" @change="getFile($event)" required="required" accept=".mobileprovision" aria-required="true" class="custom-file-input" v-bind:class="mobCss" id="mobileprovision" style="z-index: -5;">
-                                        <label data-browse="Browse" class="custom-file-label" for="mobileprovision">
-                                            <span class="d-block form-file-text" style="pointer-events: none;">{{ mobText }}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-6">
-                                    <input type="text" v-model="identifier" ref="identifier" placeholder="Enter new bundle identifier" class="form-control" id="identifier">
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <input type="text" v-model="name" ref="name" placeholder="Enter new bundle name" class="form-control" id="name">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-6">
-                                    <label class="form-control">
-                                        <span>Delete dynamic library</span>
-                                        <div style="display: inline-block; float: right"><input type="radio" name="radio" value="1" v-model="unlockValue" disabled="disabled"> Yes</div>
-                                    </label>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="form-control">
-                                        <span>Delete dynamic library</span>
-                                        <div style="display: inline-block; float: right"><input type="radio" name="radio" value="0" v-model="unlockValue"> No</div>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button class="btn btn-primary btn-block" @click="upload">
-                                Sign App
-                            </button>
+    <div id="app" class="container">
+        <div class="row mt-5">
+            <div class="col-sm-12 col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-body" v-show="showStep1">
+                        <div class="mb-3">
+                            <label for="ipa" class="form-label">Select .ipa File</label>
+                            <input type="file" @change="getFile($event)" ref="ipa" accept=".ipa" class="form-control" id="ipa">
                         </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label for="p12" class="form-label">Select .p12 File</label>
+                                <input type="file" @change="getFile($event)" ref="p12" accept=".p12" class="form-control" id="p12">
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="password" class="form-label">Enter .p12 Password</label>
+                                <input type="text" v-model="password" ref="pwd" class="form-control" id="password">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mobileprovision" class="form-label">Select .mobileprovision File</label>
+                            <input type="file" ref="mob" @change="getFile($event)" accept=".mobileprovision" class="form-control" id="mobileprovision">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-6">
+                                <label for="identifier" class="form-label">Enter New Bundle Identifier</label>
+                                <input type="text" v-model="identifier" ref="identifier" class="form-control" id="identifier">
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="name" class="form-label">Enter New Bundle Name</label>
+                                <input type="text" v-model="name" ref="name" class="form-control" id="name">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Delete Dynamic Library</label>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" value="1" v-model="unlockValue" id="deleteLibraryYes" disabled>
+                                <label class="form-check-label" for="deleteLibraryYes">Yes</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" value="0" v-model="unlockValue" id="deleteLibraryNo">
+                                <label class="form-check-label" for="deleteLibraryNo">No</label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" @click="upload">
+                            Sign App
+                        </button>
+                    </div>
+                    <!-- Các phần tiếp theo tương tự -->
+                
 
                         <div class="card-body" v-show="showStep2">
                             <div class="progress">
