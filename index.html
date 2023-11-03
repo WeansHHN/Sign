@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="./css/app.css">
 
     <style>
+
         .fade-enter-active, .fade-leave-active {
             transition: opacity 0.3s
         }
@@ -61,16 +62,15 @@
                                 <input type="text" v-model="name" ref="name" class="form-control" id="name">
                             </div>
                         </div>
-                        </div>
-
+                        
                         <button class="btn btn-primary btn-block" @click="upload">
                             Sign App
                         </button>
                     </div>
-                    <!-- Các phần tiếp theo tương tự -->
-                
+                </div>
 
                         <div class="card-body" v-show="showStep2">
+                            <h3 style="color:aliceblue">Đang kí iPA:</h3>
                             <div class="progress">
                                 <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progressBar }}" class="progress-bar bg-success progress-bar-striped progress-bar-animated"
                                      v-bind:style="{'width': progressBar + '%'}"><strong>{{ progressBar }}%</strong>
