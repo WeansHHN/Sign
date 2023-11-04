@@ -1438,7 +1438,12 @@ body {
     line-height: 1.5;
     color: #212529;
     text-align: left;
-    background-color: #0000007c
+background: linear-gradient(to bottom, #0000FF, #800080);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 }[tabindex="-1"]:focus:not(:focus-visible) {
      outline: 0!important
  }
