@@ -1,286 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Sign App</title>
+  <meta charset="UTF-8">
+  <title>IPASign - Ký IPA Online</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script type="text/javascript" src="./js/vue.min.js"></script>
-    <script type="text/javascript" src="./js/axios.min.js"></script>
-    <script type="text/javascript" src="./js/index.js"></script>
-    <script type="text/javascript" src="./js/qrcode.min.js"></script>
-    <link rel="stylesheet" href="./css/app.css">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-        .fade-enter-active, .fade-leave-active {
-            transition: opacity 0.3s
-        }
-        .fade-enter, .fade-leave-to {
-            opacity: 0
-        }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
 
-        body {
-            padding: 1px;
-        }
-    </style>
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .btn-secondary {
+      border-radius: 10px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <div id="app" class="container">
-        <div class="row mt-5">
-            <div class="col-sm-12 col-md-10 offset-md-1">
-                <div class="card">
-                    <div class="card-body" v-show="showStep1">
-                        <div class="mb-3">
-                            <label for="ipa" class="form-label">Select .ipa File</label>
-                            <input type="file" @change="getFile($event)" ref="ipa" accept=".ipa" class="form-control" id="ipa">
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-sm-6">
-                                <label for="p12" class="form-label">Select .p12 File</label>
-                                <input type="file" @change="getFile($event)" ref="p12" accept=".p12" class="form-control" id="p12">
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="password" class="form-label">Enter .p12 Password</label>
-                                <input type="text" v-model="password" ref="pwd" class="form-control" id="password">
-                            </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="mobileprovision" class="form-label">Select .mobileprovision File</label>
-                            <input type="file" ref="mob" @change="getFile($event)" accept=".mobileprovision" class="form-control" id="mobileprovision">
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-sm-6">
-                                <label for="identifier" class="form-label">Enter New Bundle Identifier</label>
-                                <input type="text" v-model="identifier" ref="identifier" class="form-control" id="identifier">
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="name" class="form-label">Enter New Bundle Name</label>
-                                <input type="text" v-model="name" ref="name" class="form-control" id="name">
-                            </div>
-                        </div>
-                        
-                        <button class="btn btn-primary btn-block" @click="upload">
-                            Sign App
-                        </button>
-                    </div>
-                </div>
-
-                        <div class="card-body" v-show="showStep2">
-                            <h3 style="color:#ffffff">Đang kí iPA:</h3>
-                            <div class="progress">
-                                <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progressBar }}" class="progress-bar bg-success progress-bar-striped progress-bar-animated"
-                                     v-bind:style="{'width': progressBar + '%'}"><strong>{{ progressBar }}%</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card-body" v-show="showStep3">
-                            <svg style="height: 20px" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="cog" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-cog fa-w-16 fa-spin">
-                                    <path fill="currentColor" d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z" class=""></path>
-                            </svg> We are processing your files, please wait...
-                        </div>
-
-                        <div class="card-body" v-show="showStep4">
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <h6>Scan this code with camera</h6>
-                                    <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
-                                </div>
-                                <div class="col-sm-8">
-                                    <h6>Copy &amp; send link to your testers</h6>
-                                    <a :href="download"
-                                       target="_self" class="d-block mx-auto">{{download}}</a>
-                                    <div style="margin-top: 48px;"><a :href="download_ipa">Download IPA</a></div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn mt-3 btn-primary btn-block" @click="index">Start over</button>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
+  <div class="container mt-4">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold text-primary">IPASign</h3>
+      <p class="text-muted">Ký file IPA trực tuyến không cần macOS</p>
     </div>
 
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                show: true,
-                showStep1: true,
-                showStep2: false,
-                showStep3: false,
-                showStep4: false,
-                progressBar: 0,
-                ipaCss: 'is-invalid',
-                ipaText: 'Chọn iPA',
-                p12Css: 'is-invalid',
-                p12Text: 'Chọn file .p12',
-                pwdCss: 'is-invalid',
-                pwdText: 'Enter .p12 password',
-                mobCss: 'is-invalid',
-                mobText: 'Choose an .mobileprovision file or drop it here...',
-                download: '',
-                download_ipa: '',
-                ipa: '',
-                p12: '',
-                password: '',
-                mobileprovision: '',
-                name: '',
-                identifier: '',
-                unlockValue: 0,
-            },
-            methods: {
-                getFile: function (params) {
-                    console.info(params);
-                    switch (params.srcElement.accept) {
-                        case '.ipa':
-                            if (params.target.files.length > 0) {
-                                this.ipaCss = 'is-valid';
-                                this.ipaText = params.target.files[0].name;
-                                this.ipa = params.target.files[0];
-                            } else {
-                                this.ipaCss = 'is-invalid';
-                                this.ipaText = 'Choose an .ipa file or drop it here...';
-                                this.ipa = '';
-                            }
-                            break;
-                        case '.p12':
-                            if (params.target.files.length > 0) {
-                                this.p12Css = 'is-valid';
-                                this.p12Text = params.target.files[0].name;
-                                this.p12 = params.target.files[0];
-                            } else {
-                                this.p12Css = 'is-invalid';
-                                this.p12Text = 'Choose an .ipa file or drop it here...';
-                                this.p12 = '';
-                            }
-                            break;
-                        case '.mobileprovision':
-                            if (params.target.files.length > 0) {
-                                this.mobCss = 'is-valid';
-                                this.mobText = params.target.files[0].name;
-                                this.mobileprovision = params.target.files[0];
-                            } else {
-                                this.mobCss = 'is-invalid';
-                                this.mobText = 'Choose an .mobileprovision file or drop it here...';
-                                this.mobileprovision = '';
-                            }
-                            break;
-                    }
-                },
-                upload: function () {
-                    let that = this;
-                    var refs = this.$refs;
-                    var keys = Object.keys(refs);
+    <div class="card p-4 bg-white">
+      <form>
 
-                    for (var i = 0; i < Object.keys(refs).length; i++) {
-                        if (refs[keys[i]].ariaRequired && !refs[keys[i]].value) {
-                            refs[keys[i]].focus();
-                            return false;
-                        }
-                    }
+        <!-- Toggle -->
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="toggleIpaSelect">
+          <label class="form-check-label" for="toggleIpaSelect">Sử dụng file IPA có sẵn</label>
+        </div>
 
-                    // 文件上传
-                    this.showStep1 = false;
-                    this.showStep2 = true;
-                    var formData = new FormData();
-                    formData.append("ipa", this.ipa);
-                    formData.append("p12", this.p12);
-                    formData.append("name", this.name);
-                    formData.append("password", this.password);
-                    formData.append("unlock", this.unlockValue);
-                    formData.append("identifier", this.identifier);
-                    formData.append("mobileprovision", this.mobileprovision);
-                    let config = {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        },
-                        onUploadProgress: (progressEvent) => {
-                            // 使用本地 progress 事件
-                            if (progressEvent.lengthComputable) {
-                                let num = Math.round((progressEvent.loaded / progressEvent.total) * 100)
-                                this.progressBar = num // 使用某种 UI 进度条组件会用到的百分比
-                            }
-                        }
-                    }
+        <!-- Upload IPA -->
+        <div class="mb-3" id="ipa-upload-group">
+          <label for="ipa" class="form-label">Chọn file IPA từ máy</label>
+          <input class="form-control" type="file" accept=".ipa" id="ipa" required>
+        </div>
 
-                    axios.post(uploadUrl, formData, config).then((response) => {
-                        if(response.data.code==0){
-                            // 上传完成，开始签名
-                            that.showStep2 = false;
-                            that.showStep3 = true;
-                            let data = response.data.data;
+        <!-- Select IPA -->
+        <div class="mb-3" id="ipa-select-group" style="display: none;">
+          <label for="ipa-select" class="form-label">Chọn file IPA có sẵn</label>
+          <select class="form-select" id="ipa-select">
+            <option value="">-- Chọn một file IPA --</option>
+            <option value="https://archive.org/download/esign-5.0.2/ESign_5.0.2.ipa">Esign (ESign_5.0.2.ipa)</option>
+            <option value="https://cdn.gbox.run/d/res/GBox_v5.7.6.ipa">Gbox (GBox_v5.7.6.ipa)</option>
+            <option value="https://resources.usescarlet.com/repo/IPAs/ScarletAlpha.ipa">Scarlet (ScarletAlpha.ipa)</option>
+          </select>
+          <a id="ipa-download-link" href="#" class="btn btn-sm btn-secondary mt-2" target="_blank" style="display: none;">Tải file IPA này</a>
+        </div>
 
-                            this.status(data);
+        <!-- P12 -->
+        <div class="mb-3">
+          <label for="p12" class="form-label">Chọn file chứng chỉ (.p12)</label>
+          <input class="form-control" type="file" accept=".p12" id="p12" required>
+        </div>
 
-                        } else {
-                            alert('Please check the certificate password');
-                        }
-                    }).catch(function (error) {
-                        alert(error);
-                    });
-                },
-                status: function(params) {
-                    let that = this;
-                    var signData = new FormData();
-                    signData.append("uuid", params.uuid);
-                    signData.append("time", params.time);
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Mật khẩu của file .p12</label>
+          <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu" required>
+        </div>
 
-                    let headers = {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
+        <!-- MobileProvision -->
+        <div class="mb-3">
+          <label for="mobileprovision" class="form-label">Chọn file provisioning (.mobileprovision)</label>
+          <input class="form-control" type="file" accept=".mobileprovision" id="mobileprovision" required>
+        </div>
 
-                    axios.post(checkUrl, signData, headers).then((response) => {
-                        if (response.data.code == 0) {
-                            // 签名成功
-                            this.showStep3 = false;
-                            this.showStep4 = true;
+        <!-- Bundle ID & App Name -->
+        <div class="row mb-3">
+          <div class="col">
+            <label for="identifier" class="form-label">Bundle ID (tuỳ chọn)</label>
+            <input type="text" class="form-control" id="identifier" placeholder="com.ten.app">
+          </div>
+          <div class="col">
+            <label for="name" class="form-label">Tên App (tuỳ chọn)</label>
+            <input type="text" class="form-control" id="name" placeholder="Tên mới">
+          </div>
+        </div>
 
-                            that.download = downloadUrl + '/' + params.uuid + '/' + params.time;
-                            that.download_ipa = storageUrl + '/' + params.time + '/' + params.uuid + '/' + 'resign_' + params.time + '.ipa'
-                            var qrcode = new QRCode(document.getElementById("qrcode"), {
-                                width : 100,
-                                height : 100
-                            });
-                            qrcode.makeCode(that.download);
-                        } else if (response.data.code == 1) {
-                            console.info("签名中");
-                            setTimeout("this.status()","3000");
-                            const timer = setInterval(() => {
-                                clearInterval(timer)
-                                this.status(params);
-                            }, 3000)
-                        } else {
-                            alert("Signature failed");
-                            return;
-                        }
-                    });
-                },
-                close: function () {
-                    this.show = false;
-                },
-                index: function () {
-                    location.reload();
-                }
-            },
-            watch: {
-                password: function (params) {
-                    if (params.length > 0) {
-                        this.pwdCss = 'is-valid';
-                    } else {
-                        this.pwdCss = 'is-invalid';
-                    }
-                },
-            },
-        })
-    </script>
+        <!-- Button -->
+        <button type="submit" class="btn btn-primary w-100">Ký ngay</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS + custom JS -->
+  <script>
+    document.getElementById('toggleIpaSelect').addEventListener('change', function () {
+      const useExisting = this.checked;
+      document.getElementById('ipa-upload-group').style.display = useExisting ? 'none' : 'block';
+      document.getElementById('ipa-select-group').style.display = useExisting ? 'block' : 'none';
+    });
+
+    document.getElementById('ipa-select').addEventListener('change', function () {
+      const selectedUrl = this.value;
+      const downloadLink = document.getElementById('ipa-download-link');
+      if (selectedUrl) {
+        downloadLink.href = selectedUrl;
+        downloadLink.style.display = 'inline-block';
+      } else {
+        downloadLink.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
